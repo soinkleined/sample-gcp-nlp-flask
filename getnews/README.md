@@ -1,4 +1,4 @@
 example:
 
-![getnes](getnes.png)
+![getnews](getnews.png)
 
