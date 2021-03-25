@@ -80,6 +80,7 @@ def get_news(url):
                 page_src = BeautifulSoup(page.content, 'html.parser', parse_only=parse_only)
             text = page_src.get_text()
             text = re.sub(r"^\s+|\s+$|\n\n", "", text)
+            text = text[:521] # not sure why there is a character limit in the form or where it is set
             submit_text = { 
                     'text': text
                     }
