@@ -15,7 +15,7 @@ import re
 # METHODS
 ########################################
 
-def get_page(url):
+def page_get(url):
     # Set up the request headers that we're going to use, to simulate
     # a request by the Chrome browser. Simulating a request from a browser
     # is generally good practice when building a scraper
@@ -29,6 +29,10 @@ def get_page(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
     }
     return requests.get(url, headers)
+
+def page_post(url, payload):
+    #data = requests.utils.quote(str(payload))
+    return requests.post(url, data = payload)
 
 #page=get_page('https://www.db.com/media/news')
 #print(page.content)
@@ -68,7 +72,7 @@ def get_links(news_url):
 def get_news(url):
     for link in get_links(url):
             print(link)
-            page = get_page(link)
+            page = page_get(link)
             parse_only = SoupStrainer('div',{'class': 'news-text'})
             page_src = BeautifulSoup(page.content, 'html.parser', parse_only=parse_only)
             if len(page_src) == 0:
@@ -76,7 +80,14 @@ def get_news(url):
                 page_src = BeautifulSoup(page.content, 'html.parser', parse_only=parse_only)
             text = page_src.get_text()
             text = re.sub(r"^\s+|\s+$|\n\n", "", text)
-            print(text)
+            submit_text = { 
+                    'text': text
+                    }
+            #NLP_result = requests.post('http://gee-nlp-project.oa.r.appspot.com/upload', data = submit_text)
+            NLP_result = page_post('http://gee-nlp-project.oa.r.appspot.com/upload', submit_text)
+            NLP_out = BeautifulSoup(NLP_result.content, 'html.parser')
+            NLP_out = NLP_out.get_text()
+            print(NLP_out)
 
 #Explicitly call language as it responds based on geo-location
 get_news('https://www.db.com/media/news?language_id=1') #English
